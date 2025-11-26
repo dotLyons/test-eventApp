@@ -14,9 +14,9 @@
         <div class="bg-white rounded-xl shadow-md p-6 mb-8">
             <h2 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">Nuevo Producto</h2>
 
-            <form wire:submit.prevent="save" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+            <form wire:submit.prevent="save" class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
 
-                {{-- 1. NOMBRE (Ocupa 5 de 12 columnas en PC) --}}
+                {{-- 1. NOMBRE --}}
                 <div class="col-span-12 md:col-span-5">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                     <input wire:model="name" type="text" placeholder="Ej: Fernet"
@@ -26,18 +26,15 @@
                     @enderror
                 </div>
 
-                {{-- 2. PRECIO (Ocupa 2 de 12 columnas en PC - Más estrecho) --}}
-                <div class="col-span-12 md:col-span-2">
+                {{-- 2. PRECIO --}}
+                <div class="col-span-12 md:col-span-3">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Precio</label>
                     <div class="relative rounded-md shadow-sm">
-                        {{-- Símbolo $ (Posicionamiento absoluto) --}}
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <span class="text-gray-500 sm:text-sm font-bold">$</span>
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center">
+                            <span class="text-gray-500 font-bold">$</span>
                         </div>
-
-                        {{-- Input con pl-7 (padding-left) suficiente para no pisar el símbolo --}}
                         <input wire:model="price" type="number" step="0.01"
-                            class="block w-full rounded-md border-gray-300 pl-8 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ml-2"
+                            class="block w-full rounded-md border-gray-300 pl-10 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ml-2"
                             placeholder="0.00">
                     </div>
                     @error('price')
@@ -45,24 +42,41 @@
                     @enderror
                 </div>
 
-                {{-- 3. URL IMAGEN (Ocupa 5 de 12 columnas en PC) --}}
-                <div class="col-span-12 md:col-span-5">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">URL Imagen</label>
-                    <input wire:model="image_url" type="url" placeholder="https://..."
-                        class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    @error('image_url')
-                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                {{-- 3. SUBIDA DE IMAGEN --}}
+                <div class="col-span-12 md:col-span-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Imagen</label>
+
+                    <div class="flex items-center gap-4">
+                        {{-- Input File --}}
+                        <label
+                            class="flex flex-col items-center px-4 py-2 bg-white text-indigo-600 rounded-lg shadow-sm tracking-wide uppercase border border-blue cursor-pointer hover:bg-indigo-50 transition">
+                            <span class="text-xs font-bold">📷 Subir Foto</span>
+                            <input type='file' wire:model="photo" class="hidden" accept="image/*" />
+                        </label>
+
+                        {{-- Vista Previa (Preview) --}}
+                        @if ($photo)
+                            <div class="h-12 w-12 rounded overflow-hidden border border-gray-200">
+                                <img src="{{ $photo->temporaryUrl() }}" class="object-cover w-full h-full">
+                            </div>
+                            <span class="text-xs text-green-600 font-bold">¡Cargada!</span>
+                        @endif
+                    </div>
+
+                    <div wire:loading wire:target="photo" class="text-xs text-indigo-500 mt-1">Subiendo...</div>
+                    @error('photo')
+                        <span class="text-red-500 text-xs block mt-1">{{ $message }}</span>
                     @enderror
                 </div>
 
-                {{-- 4. BOTÓN (Fila completa abajo para no apretar) --}}
-                <div class="col-span-12 flex justify-end mt-2">
-                    <button type="submit"
-                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md w-full md:w-auto">
-                        Guardar Producto
+                {{-- 4. BOTÓN --}}
+                <div class="col-span-12 flex justify-end pt-2 border-t border-gray-100">
+                    <button type="submit" wire:loading.attr="disabled"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl transition shadow-lg w-full md:w-auto flex items-center justify-center gap-2">
+                        <span wire:loading.remove wire:target="photo">Guardar Producto</span>
+                        <span wire:loading wire:target="photo">Espere...</span>
                     </button>
                 </div>
-
             </form>
 
             {{-- Mensajes Flash --}}

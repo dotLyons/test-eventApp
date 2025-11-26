@@ -5,14 +5,17 @@ namespace App\Livewire;
 use App\Models\Product;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
 class ProductManager extends Component
 {
+    use WithFileUploads;
+
     // Definimos las variables limpias, sin atributos raros
     public $name = '';
 
-    public $image_url = '';
+    public $photo;
 
     public $price = 0.0;
 
@@ -25,31 +28,33 @@ class ProductManager extends Component
 
     public function save()
     {
-        // SOLUCIÓN: Validación explícita aquí dentro.
-        // Esto evita el error de conversión porque pasamos un array directo.
-        $validated = $this->validate([
+        $this->validate([
             'name' => 'required|min:3',
-            'image_url' => 'required|url',
             'price' => 'required|numeric|min:0',
+            'photo' => 'required|image|max:5120', // Máx 5MB, debe ser imagen
         ], [
-            // Mensajes personalizados (opcional)
             'name.required' => 'El nombre es obligatorio.',
-            'name.min' => 'El nombre debe tener al menos 3 letras.',
-            'image_url.required' => 'La imagen es obligatoria.',
-            'image_url.url' => 'Debe ser una URL válida (http://...).',
+            'name.min' => 'El nombre debe tener al menos 3 caracteres.',
             'price.required' => 'El precio es obligatorio.',
-            'price.numeric' => 'El precio debe ser un número.',
+            'price.numeric' => 'El precio debe ser un número válido.',
             'price.min' => 'El precio no puede ser negativo.',
+            'photo.required' => 'Debes subir una imagen.',
+            'photo.image' => 'El archivo debe ser una imagen (JPG, PNG).',
+            'photo.max' => 'La imagen no puede pesar más de 5MB.',
         ]);
+
+        // 3. Guardamos la imagen en el disco 'public', carpeta 'products'
+        // Esto devuelve el path, ej: "products/askjdhasd.jpg"
+        $path = $this->photo->store('products', 'public');
 
         Product::create([
             'name' => $this->name,
-            'image_url' => $this->image_url,
             'price' => $this->price,
+            'image_url' => $path, // Guardamos la ruta local en la BD
             'is_available' => true,
         ]);
 
-        $this->reset(['name', 'image_url', 'price']);
+        $this->reset(['name', 'price', 'photo']); // Limpiamos todo
         session()->flash('message', 'Producto creado exitosamente.');
     }
 
