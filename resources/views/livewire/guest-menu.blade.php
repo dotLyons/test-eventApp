@@ -17,7 +17,7 @@
         {{-- HEADER: Nombre de la Mesa --}}
         <div class="sticky top-0 z-40 bg-white shadow-sm px-4 py-3 flex justify-between items-center">
             <div>
-                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Estás en</p>
+                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Estás en la</p>
                 <h1 class="text-xl font-black text-indigo-600">{{ $table->name }}</h1>
             </div>
             <div class="bg-gray-100 rounded-full p-2">
@@ -38,7 +38,9 @@
                     {{-- Info y Controles --}}
                     <div class="p-3 flex-1 flex flex-col justify-between">
                         <h3 class="font-bold text-gray-800 leading-tight">{{ $product->name }}</h3>
-
+                        <p class="text-indigo-600 font-bold mt-1">
+                            ${{ number_format($product->price, 2, ',', '.') }}
+                        </p>
                         <div class="flex justify-end items-center mt-2">
                             @if (isset($cart[$product->id]))
                                 {{-- Controles +/- --}}
@@ -71,18 +73,26 @@
                     <button wire:click="submitOrder" wire:loading.attr="disabled"
                         class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg flex justify-between items-center active:scale-95 transition transform">
 
-                        <span class="bg-indigo-800 py-1 px-2 rounded text-xs">
-                            {{ array_sum($cart) }} ítems
-                        </span>
+                        {{-- IZQUIERDA: Cantidad de items --}}
+                        <div class="flex items-center gap-2">
+                            <span class="bg-indigo-800 py-1 px-2 rounded text-xs text-indigo-100">
+                                {{ array_sum($cart) }} ítems
+                            </span>
+                        </div>
 
-                        <span wire:loading.remove>Confirmar Pedido &rarr;</span>
-                        <span wire:loading>Enviando... ⏳</span>
+                        {{-- CENTRO: Texto de acción --}}
+                        <span wire:loading.remove class="text-sm uppercase tracking-wide">Confirmar</span>
+                        <span wire:loading class="text-sm">Enviando... ⏳</span>
 
-                        <span></span>
+                        {{-- DERECHA: Total a Pagar (¡Aquí está la magia!) --}}
+                        <div class="font-mono text-lg bg-indigo-800/50 px-2 rounded">
+                            ${{ number_format($totalAmount, 2, ',', '.') }}
+                        </div>
                     </button>
                 </div>
             </div>
-        @endif
+</div>
+@endif
 
-    @endif
+@endif
 </div>

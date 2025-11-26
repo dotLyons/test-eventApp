@@ -6,13 +6,13 @@
         <h1 class="text-2xl md:text-3xl font-bold text-gray-800 flex items-center gap-2">
             👨‍🍳 Comandas
         </h1>
-        
+
         {{-- Badge visible solo en móvil --}}
         <span class="md:hidden text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full animate-pulse">
             ● En vivo
         </span>
     </div>
-    
+
     {{-- Lado Derecho: Badge Desktop + Botón Menú --}}
     <div class="flex items-center gap-3 self-end md:self-auto">
         {{-- Badge visible solo en escritorio --}}
@@ -21,8 +21,15 @@
         </span>
 
         {{-- EL NUEVO BOTÓN A PRODUCTOS --}}
-        <a href="{{ route('products') }}" class="bg-white border border-gray-300 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 px-4 py-2 rounded-lg shadow-sm font-medium transition flex items-center gap-2 text-sm">
+        <a href="{{ route('products') }}"
+            class="bg-white border border-gray-300 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 px-4 py-2 rounded-lg shadow-sm font-medium transition flex items-center gap-2 text-sm">
             🍔 Gestionar Menú
+        </a>
+
+        {{-- NUEVO: Botón MESAS --}}
+        <a href="{{ route('tables') }}"
+            class="bg-white border border-gray-300 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 px-3 py-2 rounded-lg shadow-sm font-medium transition text-sm">
+            🪑 Mesas
         </a>
     </div>
 

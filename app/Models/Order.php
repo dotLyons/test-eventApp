@@ -8,7 +8,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    protected $fillable = ['event_table_id', 'status'];
+    protected $fillable = ['event_table_id', 'status', 'is_paid'];
+
+    protected $casts = [
+        'is_paid' => 'boolean',
+    ];
+
+    public function getTotalAttribute()
+    {
+        return $this->items->sum(function ($item) {
+            return $item->quantity * $item->price;
+        });
+    }
 
     public function items(): HasMany
     {

@@ -26,8 +26,19 @@ class GuestMenu extends Component
     {
         $products = Product::where('is_available', true)->get();
 
+        $totalAmount = 0;
+
+        foreach ($this->cart as $productId => $quantity) {
+            $product = $products->find($productId);
+
+            if ($product) {
+                $totalAmount += $product->price * $quantity;
+            }
+        }
+
         return view('livewire.guest-menu', [
             'products' => $products,
+            'totalAmount' => $totalAmount,
         ]);
     }
 

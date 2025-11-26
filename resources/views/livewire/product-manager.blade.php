@@ -14,33 +14,55 @@
         <div class="bg-white rounded-xl shadow-md p-6 mb-8">
             <h2 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">Nuevo Producto</h2>
 
-            <form wire:submit.prevent="save" class="flex flex-col md:flex-row gap-4 items-end">
+            <form wire:submit.prevent="save" class="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
 
-                {{-- Input Nombre --}}
-                <div class="w-full md:flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del producto</label>
-                    <input wire:model="name" type="text" placeholder="Ej: Pizza Especial"
+                {{-- 1. NOMBRE (Ocupa 5 de 12 columnas en PC) --}}
+                <div class="col-span-12 md:col-span-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                    <input wire:model="name" type="text" placeholder="Ej: Fernet"
                         class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     @error('name')
                         <span class="text-red-500 text-xs">{{ $message }}</span>
                     @enderror
                 </div>
 
-                {{-- Input URL Imagen --}}
-                <div class="w-full md:flex-1">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">URL de la Imagen (ImgBB)</label>
-                    <input wire:model="image_url" type="url" placeholder="https://i.ibb.co/..."
+                {{-- 2. PRECIO (Ocupa 2 de 12 columnas en PC - Más estrecho) --}}
+                <div class="col-span-12 md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Precio</label>
+                    <div class="relative rounded-md shadow-sm">
+                        {{-- Símbolo $ (Posicionamiento absoluto) --}}
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                            <span class="text-gray-500 sm:text-sm font-bold">$</span>
+                        </div>
+
+                        {{-- Input con pl-7 (padding-left) suficiente para no pisar el símbolo --}}
+                        <input wire:model="price" type="number" step="0.01"
+                            class="block w-full rounded-md border-gray-300 pl-8 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm ml-2"
+                            placeholder="0.00">
+                    </div>
+                    @error('price')
+                        <span class="text-red-500 text-xs">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- 3. URL IMAGEN (Ocupa 5 de 12 columnas en PC) --}}
+                <div class="col-span-12 md:col-span-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">URL Imagen</label>
+                    <input wire:model="image_url" type="url" placeholder="https://..."
                         class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     @error('image_url')
                         <span class="text-red-500 text-xs">{{ $message }}</span>
                     @enderror
                 </div>
 
-                {{-- Botón Guardar --}}
-                <button type="submit"
-                    class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition">
-                    Guardar
-                </button>
+                {{-- 4. BOTÓN (Fila completa abajo para no apretar) --}}
+                <div class="col-span-12 flex justify-end mt-2">
+                    <button type="submit"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition shadow-md w-full md:w-auto">
+                        Guardar Producto
+                    </button>
+                </div>
+
             </form>
 
             {{-- Mensajes Flash --}}

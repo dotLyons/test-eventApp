@@ -21,6 +21,7 @@ class OrderService
             $order = Order::create([
                 'event_table_id' => $tableId,
                 'status' => 'pending',
+                'is_paid' => false,
             ]);
 
             foreach ($items as $item) {
@@ -32,6 +33,7 @@ class OrderService
                         'product_id' => $product->id,
                         'quantity' => $item['quantity'],
                         'product_name_snapshot' => $product->name,
+                        'price' => $product->price,
                     ]);
                 }
             }
