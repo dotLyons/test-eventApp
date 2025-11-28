@@ -14,17 +14,31 @@
             </button>
         </div>
     @else
-        {{-- HEADER: Nombre de la Mesa --}}
+        {{-- HEADER: Nombre de la Mesa + Logo --}}
         <div class="sticky top-0 z-40 bg-white shadow-sm px-4 py-3 flex justify-between items-center">
-            <div>
-                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Estás en la</p>
-                <h1 class="text-xl font-black text-indigo-600">{{ $table->name }}</h1>
+
+            {{-- Lado Izquierdo: Nombre de la Mesa --}}
+            <div class="flex-1 pr-4"> {{-- pr-4 para que el texto no toque el logo si es muy largo --}}
+                <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Estás en</p>
+                <h1 class="text-xl font-black text-indigo-600 truncate">{{ $table->name }}</h1>
             </div>
-            <div class="bg-gray-100 rounded-full p-2">
-                🍽️
+
+            {{-- Lado Derecho: Logo y Plato --}}
+            <div class="flex items-center gap-3 flex-shrink-0">
+
+                {{-- CONTENEDOR DEL LOGO --}}
+                <div
+                    class="w-12 h-12 rounded-full overflow-hidden border border-gray-200 bg-white flex items-center justify-center">
+                    <img src="https://i.ibb.co/Lq7WZF6/PANETTO-GRANDES-EVENTOS-plateado.png" alt="Logo"
+                        class="w-full h-full object-contain">
+                </div>
+
+                {{-- Ícono existente --}}
+                <div class="bg-gray-100 rounded-full p-2 w-10 h-10 flex items-center justify-center text-lg">
+                    🍽️
+                </div>
             </div>
         </div>
-
         {{-- LISTA DE PRODUCTOS --}}
         <div class="p-4 grid grid-cols-1 gap-4">
             @foreach ($products as $product)

@@ -70,6 +70,22 @@
                     ${{ number_format($stats['total'], 2, ',', '.') }}
                 </span>
             </div>
+
+            {{-- NUEVO BOTÓN: CIERRE DE CAJA Y REINICIO --}}
+            <button wire:click="closeRegister"
+                wire:confirm="⚠️ ATENCIÓN: ¿Estás seguro de hacer el CIERRE DE CAJA?\n\nEsto pondrá los contadores a CERO y descargará el reporte.\n\nEsta acción no se puede deshacer."
+                wire:loading.attr="disabled"
+                class="block w-full mb-3 bg-gray-800 text-white hover:bg-black font-bold py-3 rounded-xl text-center transition shadow-lg flex justify-center items-center gap-2 border border-gray-900">
+
+                <span wire:loading.remove>🖨️ Cerrar Caja y Descargar</span>
+                <span wire:loading>Generando Cierre...</span>
+            </button>
+
+            {{-- VOLVER AL DASHBOARD --}}
+            <a href="{{ route('dashboard') }}"
+                class="block w-full bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-indigo-600 hover:border-indigo-300 font-bold py-3 rounded-xl text-center transition shadow-sm flex justify-center items-center gap-2">
+                &larr; Volver a la Cocina
+            </a>
         </div>
     </div>
 

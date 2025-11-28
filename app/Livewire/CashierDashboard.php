@@ -5,6 +5,8 @@ namespace App\Livewire;
 use App\Models\EventTable;
 use App\Models\Order;
 use App\Models\Payment;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
@@ -20,10 +22,12 @@ class CashierDashboard extends Component
 
     public function render()
     {
-        $totalCash = Payment::where('method', 'cash')->sum('amount');
-        $totalTransfer = Payment::where('method', 'transfer')->sum('amount');
+        // 1. Totales Generales (SOLO DEL TURNO ACTUAL)
+        // Filtramos por 'is_closed' => false
+        $totalCash = Payment::where('method', 'cash')->where('is_closed', false)->sum('amount');
+        $totalTransfer = Payment::where('method', 'transfer')->where('is_closed', false)->sum('amount');
 
-        // 2. Mesas Abiertas (Lo que ya tenías)
+        // 2. Mesas Abiertas
         $tables = EventTable::whereHas('orders', function ($q) {
             $q->where('is_paid', false);
         })->with(['orders' => function ($q) {
@@ -93,5 +97,59 @@ class CashierDashboard extends Component
 
         $this->selectedTable = null;
         session()->flash('message', 'Mesa cerrada y cobrada exitosamente. 💰');
+    }
+
+    // --- CIERRE DE CAJA ---
+    public function closeRegister()
+    {
+        // 1. Calculamos los totales finales antes de cerrar
+        $payments = Payment::where('is_closed', false)->get();
+
+        if ($payments->isEmpty()) {
+            session()->flash('error', 'No hay movimientos para cerrar.');
+
+            return;
+        }
+
+        $cash = $payments->where('method', 'cash')->sum('amount');
+        $transfer = $payments->where('method', 'transfer')->sum('amount');
+        $total = $cash + $transfer;
+        $date = Carbon::now()->format('d/m/Y H:i');
+
+        $data = [
+            'date' => $date,
+            'cash' => $cash,
+            'transfer' => $transfer,
+            'total' => $total,
+            'count' => $payments->count(),
+        ];
+
+        $pdf = Pdf::loadView('pdf.cierre', $data);
+
+        Payment::where('is_closed', false)->update(['is_closed' => true]);
+
+        return response()->streamDownload(function () use ($pdf) {
+            echo $pdf->output();
+        }, 'Cierre-Caja-'.Carbon::now()->format('dmY-Hi').'.pdf');
+
+        // 2. Contenido del Ticket (Texto Plano)
+        $content = "=== CIERRE DE CAJA ===\n";
+        $content .= "Fecha: $date\n";
+        $content .= "----------------------\n";
+        $content .= 'Efectivo:      $ '.number_format($cash, 2)."\n";
+        $content .= 'Transferencia: $ '.number_format($transfer, 2)."\n";
+        $content .= "----------------------\n";
+        $content .= 'TOTAL:         $ '.number_format($total, 2)."\n";
+        $content .= "----------------------\n";
+        $content .= 'Movimientos:   '.$payments->count()."\n";
+        $content .= "======================\n";
+
+        // 3. Cerramos los pagos en BD (Reiniciar ciclo)
+        Payment::where('is_closed', false)->update(['is_closed' => true]);
+
+        // 4. Descargamos el archivo
+        return response()->streamDownload(function () use ($content) {
+            echo $content;
+        }, 'cierre-caja-'.Carbon::now()->format('Hi').'.txt');
     }
 }
